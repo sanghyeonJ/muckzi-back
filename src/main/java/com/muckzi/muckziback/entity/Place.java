@@ -31,10 +31,10 @@ public class Place {
     @Column(name = "ADDRESS", nullable = false, length = 200)
     private String address;
 
-    @Column(name = "LATITUDE", precision = 13, scale = 10, nullable = false)
+    @Column(name = "LATITUDE", columnDefinition = "NUMBER(13,10)", nullable = false)
     private Double latitude;
 
-    @Column(name = "LONGITUDE", precision = 13, scale = 10, nullable = false)
+    @Column(name = "LONGITUDE", columnDefinition = "NUMBER(13,10)", nullable = false)
     private Double longitude;
 
     @Column(name = "CREATED_AT", updatable = false)
