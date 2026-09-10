@@ -14,12 +14,17 @@ import java.time.LocalDateTime;
 
 public class Place {
 
+    public enum Status{
+        ACTIVE,
+        DELETED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)  // 자동증가 옵션 매핑
-    @Column(name = "PLACE_ID", unique = true)
+    @Column(name = "PLACE_ID")
     private Long placeId;
 
-    @Column(name = "NAVER_MAP_ID", nullable = false, length = 100)
+    @Column(name = "NAVER_MAP_ID", nullable = false, unique = true, length = 100)
     private String naverMapId;
 
     @Column(name = "PLACE_NAME", nullable = false, length = 100)
@@ -37,7 +42,13 @@ public class Place {
     @Column(name = "LONGITUDE", columnDefinition = "NUMBER(13,10)", nullable = false)
     private Double longitude;
 
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STATUS", nullable = false, length = 20)
+    private Status status = Status.ACTIVE;
+
+    @Builder.Default
     @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime createAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
 }
