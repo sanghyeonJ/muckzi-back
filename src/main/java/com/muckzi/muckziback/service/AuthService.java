@@ -52,6 +52,10 @@ public class AuthService {
             throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
         }
 
+        if(user.getStatus() != User.Status.ACTIVE){
+            throw new IllegalArgumentException("로그인할 수 없는 계정입니다.");
+        }
+
         String token = jwtTokenProvider.generateToken(user.getUserId(), user.getRole());
 
         return new LoginResponse(token);
