@@ -1,5 +1,6 @@
 package com.muckzi.muckziback.service;
 
+import com.muckzi.muckziback.dto.LoginRequest;
 import com.muckzi.muckziback.dto.SignupRequest;
 import com.muckzi.muckziback.entity.User;
 import com.muckzi.muckziback.repository.UserRepository;
@@ -38,6 +39,15 @@ public class AuthService {
         // DB 저장
         userRepository.save(user);
 
+    }
+
+    public void login(LoginRequest request) {
+        User user = userRepository.findByUserId(request.getUserId())
+                .orElseThrow(() -> new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다."));
+
+        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            throw new IllegalArgumentException("아이디 또는 비밀번호가 올바르지 않습니다.");
+        }
     }
 
 }
