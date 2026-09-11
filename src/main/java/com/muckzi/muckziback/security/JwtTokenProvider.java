@@ -34,4 +34,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String getUserId(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
 }
