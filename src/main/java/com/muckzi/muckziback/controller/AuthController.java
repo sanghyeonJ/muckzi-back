@@ -1,6 +1,7 @@
 package com.muckzi.muckziback.controller;
 
 import com.muckzi.muckziback.dto.LoginRequest;
+import com.muckzi.muckziback.dto.LoginResponse;
 import com.muckzi.muckziback.dto.SignupRequest;
 import com.muckzi.muckziback.service.AuthService;
 import jakarta.validation.Valid;
@@ -25,9 +26,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
-        authService.login(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
 }
