@@ -9,7 +9,7 @@ import lombok.Getter;
 public class UserResponse {
 
     private String userId;
-    private String password;
+    private String nickname;
     private User.Role role;
     private User.Status status;
 
