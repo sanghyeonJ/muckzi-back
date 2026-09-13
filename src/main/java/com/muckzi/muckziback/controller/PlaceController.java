@@ -6,6 +6,7 @@ import com.muckzi.muckziback.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -18,8 +19,13 @@ public class PlaceController {
     private final PlaceRepository placeRepository;
 
     @GetMapping
-    public List<PlaceResponse> getPlaces() {
-        List<Place> places = placeRepository.findAll();
+    public List<PlaceResponse> getPlaces(
+            @RequestParam Double swLat,
+            @RequestParam Double swLng,
+            @RequestParam Double neLat,
+            @RequestParam Double neLng
+    ) {
+        List<Place> places = placeRepository.findByLatitudeBetweenAndLongitudeBetween(swLat,neLat,swLng,neLng);
 
         return places.stream()
                 .filter(place -> place.getStatus() == Place.Status.ACTIVE)
