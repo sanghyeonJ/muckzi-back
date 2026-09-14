@@ -40,7 +40,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/naver/places"
+                                "/api/naver/places/**"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
