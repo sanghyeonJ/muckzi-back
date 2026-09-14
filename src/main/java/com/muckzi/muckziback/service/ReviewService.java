@@ -67,4 +67,22 @@ public class ReviewService {
         review.setUpdatedAt(java.time.LocalDateTime.now());
     }
 
+
+    @Transactional
+    public void deleteReview(
+            Long reviewId,
+            String userId
+    ) {
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰를 찾을 수 없습니다."));
+        if(review.getStatus() != Review.Status.ACTIVE){
+            throw new IllegalArgumentException("이미 삭제된 리뷰입니다.");
+        }
+        if(!review.getUser().getUserId().equals(userId)){
+            throw new IllegalArgumentException("본인이 작성한 리뷰만 삭제할 수 있습니다.");
+        }
+
+        review.setStatus(Review.Status.DELETED);
+    }
+
 }

@@ -56,4 +56,17 @@ public class ReviewController {
         reviewService.updateReview(reviewId, userId, request);
     }
 
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{reviewId}")
+    public void deleteReview(
+            @PathVariable Long placeId,
+            @PathVariable Long reviewId,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        reviewService.deleteReview(reviewId, userId);
+    }
+
 }
