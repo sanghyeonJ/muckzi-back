@@ -2,6 +2,7 @@ package com.muckzi.muckziback.controller;
 
 import com.muckzi.muckziback.dto.ReviewRequest;
 import com.muckzi.muckziback.dto.ReviewResponse;
+import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.entity.Review;
 import com.muckzi.muckziback.repository.ReviewRepository;
 import com.muckzi.muckziback.service.ReviewService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/places")
@@ -32,13 +34,15 @@ public class ReviewController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/reviews")
-    public void createReview(
+    public Map<String, Long> createReview(
             @Valid @RequestBody ReviewRequest request,
             Authentication authentication
     ) {
         String userId = authentication.getName();
 
-        reviewService.createReview(userId, request);
+        Place place = reviewService.createReview(userId, request);
+
+        return Map.of("placeId", place.getPlaceId());
     }
 
     @SecurityRequirement(name = "bearerAuth")

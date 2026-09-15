@@ -19,7 +19,7 @@ public class ReviewService {
     private final PlaceService placeService;
 
     @Transactional
-    public void createReview(
+    public Place createReview(
             String userId,
             ReviewRequest request
     ) {
@@ -47,6 +47,8 @@ public class ReviewService {
                 .build();
 
         reviewRepository.save(review);
+
+        return place;
     }
 
 
