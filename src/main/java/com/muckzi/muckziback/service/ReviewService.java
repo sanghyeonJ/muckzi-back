@@ -4,7 +4,6 @@ import com.muckzi.muckziback.dto.ReviewRequest;
 import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.entity.Review;
 import com.muckzi.muckziback.entity.User;
-import com.muckzi.muckziback.repository.PlaceRepository;
 import com.muckzi.muckziback.repository.ReviewRepository;
 import com.muckzi.muckziback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,21 +15,29 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewService {
 
     private final UserRepository userRepository;
-    private final PlaceRepository placeRepository;
     private final ReviewRepository reviewRepository;
+    private final PlaceService placeService;
 
+    @Transactional
     public void createReview(
-            Long placeId,
             String userId,
             ReviewRequest request
     ) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원정보를 찾을 수 없습니다."));
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
 
-        if(place.getStatus() != Place.Status.ACTIVE){
-            throw new IllegalArgumentException("삭제된 음식점에는 리뷰를 작성할 수 없습니다.");
+        Place place = placeService.findOrCreatePlace(
+                request.getPlaceName(),
+                request.getCategory(),
+                request.getAddress(),
+                request.getLatitude(),
+                request.getLongitude()
+        );
+
+        if (place.getStatus() != Place.Status.ACTIVE) {
+            throw new IllegalArgumentException(
+                    "삭제된 음식점에는 리뷰를 작성할 수 없습니다."
+            );
         }
 
         Review review = Review.builder()
@@ -38,6 +45,7 @@ public class ReviewService {
                 .place(place)
                 .content(request.getContent())
                 .build();
+
         reviewRepository.save(review);
     }
 

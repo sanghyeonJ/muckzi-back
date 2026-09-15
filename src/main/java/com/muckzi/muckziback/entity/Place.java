@@ -27,7 +27,7 @@ public class Place {
     @Column(name = "PLACE_NAME", nullable = false, length = 100)
     private String placeName;
 
-    @Column(name = "CATEGORY", nullable = false, length = 30)
+    @Column(name = "CATEGORY", nullable = false, length = 100)
     private String category;
 
     @Column(name = "ADDRESS", nullable = false, length = 200)

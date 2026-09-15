@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/places/{placeId}/reviews")
+@RequestMapping("/api/places")
 @RequiredArgsConstructor
 public class ReviewController {
 
     private final ReviewRepository reviewRepository;
     private final ReviewService reviewService;
 
-    @GetMapping
+    @GetMapping("/{placeId}/reviews")
     public List<ReviewResponse> getReviews(@PathVariable Long placeId) {
         return reviewRepository
                 .findByPlace_PlaceIdAndStatus(placeId, Review.Status.ACTIVE)
@@ -31,22 +31,19 @@ public class ReviewController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping
+    @PostMapping("/reviews")
     public void createReview(
-            @PathVariable Long placeId,
             @Valid @RequestBody ReviewRequest request,
             Authentication authentication
     ) {
         String userId = authentication.getName();
 
-        reviewService.createReview(placeId, userId, request);
+        reviewService.createReview(userId, request);
     }
 
-
     @SecurityRequirement(name = "bearerAuth")
-    @PutMapping("/{reviewId}")
+    @PutMapping("/reviews/{reviewId}")
     public void updateReview(
-            @PathVariable Long placeId,
             @PathVariable Long reviewId,
             @Valid @RequestBody ReviewRequest request,
             Authentication authentication
@@ -56,11 +53,9 @@ public class ReviewController {
         reviewService.updateReview(reviewId, userId, request);
     }
 
-
     @SecurityRequirement(name = "bearerAuth")
-    @DeleteMapping("/{reviewId}")
+    @DeleteMapping("/reviews/{reviewId}")
     public void deleteReview(
-            @PathVariable Long placeId,
             @PathVariable Long reviewId,
             Authentication authentication
     ) {
@@ -68,5 +63,4 @@ public class ReviewController {
 
         reviewService.deleteReview(reviewId, userId);
     }
-
 }
