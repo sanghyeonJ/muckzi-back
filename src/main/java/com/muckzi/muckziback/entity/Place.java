@@ -24,9 +24,6 @@ public class Place {
     @Column(name = "PLACE_ID")
     private Long placeId;
 
-    @Column(name = "NAVER_MAP_ID", nullable = false, unique = true, length = 100)
-    private String naverMapId;
-
     @Column(name = "PLACE_NAME", nullable = false, length = 100)
     private String placeName;
 

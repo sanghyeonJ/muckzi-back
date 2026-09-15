@@ -9,7 +9,6 @@ import lombok.Getter;
 public class PlaceResponse {
 
     private Long placeId;
-    private String naverMapId;
     private String placeName;
     private String category;
     private String address;
@@ -18,7 +17,6 @@ public class PlaceResponse {
 
     public PlaceResponse(Place place) {
         this.placeId = place.getPlaceId();
-        this.naverMapId = place.getNaverMapId();
         this.placeName = place.getPlaceName();
         this.category = place.getCategory();
         this.address = place.getAddress();
