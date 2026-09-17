@@ -1,5 +1,6 @@
 package com.muckzi.muckziback.service;
 
+import com.muckzi.muckziback.dto.BookmarkRequest;
 import com.muckzi.muckziback.entity.Bookmark;
 import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.entity.User;
@@ -16,17 +17,23 @@ public class BookmarkService {
 
     private final BookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
-    private final PlaceRepository placeRepository;
+    private final PlaceService placeService;
 
     @Transactional
-    public void createBookmark(
+    public Place createBookmark(
             String userId,
-            Long placeId
+            BookmarkRequest request
     ) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("회원정보를 찾을 수 없습니다."));
-        Place place = placeRepository.findById(placeId)
-                .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
+
+        Place place = placeService.findOrCreatePlace(
+                request.getPlaceName(),
+                request.getCategory(),
+                request.getAddress(),
+                request.getLatitude(),
+                request.getLongitude()
+        );
 
         if(place.getStatus() != Place.Status.ACTIVE){
             throw new IllegalArgumentException("삭제된 음식점은 북마크할 수 없습니다.");
@@ -38,6 +45,7 @@ public class BookmarkService {
                 .build();
 
         bookmarkRepository.save(bookmark);
+        return place;
     }
 
 

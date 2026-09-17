@@ -1,8 +1,11 @@
 package com.muckzi.muckziback.controller;
 
+import com.muckzi.muckziback.dto.BookmarkRequest;
+import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.repository.BookmarkRepository;
 import com.muckzi.muckziback.service.BookmarkService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -29,18 +32,19 @@ public class BookmarkController {
                 .findByUser_UserIdAndPlace_PlaceId(userId, placeId)
                 .isPresent();
 
-        return Map.of("bookmark", bookmarked);
+        return Map.of("bookmarked", bookmarked);
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("{placeId}/bookmark")
-    public void createBookmark(
-            @PathVariable Long placeId,
+    @PostMapping("/bookmark")
+    public Map<String, Long> createBookmark(
+            @Valid @RequestBody BookmarkRequest request,
             Authentication authentication
     ) {
         String userId = authentication.getName();
 
-        bookmarkService.createBookmark(userId, placeId);
+        Place place = bookmarkService.createBookmark(userId, request);
+        return Map.of("placeId", place.getPlaceId());
     }
 
     @SecurityRequirement(name = "bearerAuth")
