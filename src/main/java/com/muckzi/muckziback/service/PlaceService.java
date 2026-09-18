@@ -18,6 +18,7 @@ public class PlaceService {
     public Place findOrCreatePlace(
             String placeName,
             String category,
+            String filterCategory,
             String address,
             Double latitude,
             Double longitude
@@ -33,6 +34,7 @@ public class PlaceService {
         Place place = Place.builder()
                 .placeName(placeName)
                 .category(category)
+                .filterCategory(filterCategory)
                 .address(address)
                 .latitude(latitude)
                 .longitude(longitude)

@@ -16,6 +16,8 @@ public class ReviewRequest {
     @NotBlank(message = "카테고리를 입력해주세요.")
     private String category;
 
+    private String filterCategory;
+
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 

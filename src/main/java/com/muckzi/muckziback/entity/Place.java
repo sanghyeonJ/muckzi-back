@@ -30,6 +30,9 @@ public class Place {
     @Column(name = "CATEGORY", nullable = false, length = 100)
     private String category;
 
+    @Column(name = "FILTER_CATEGORY", nullable = false, length = 50)
+    private String filterCategory;
+
     @Column(name = "ADDRESS", nullable = false, length = 200)
     private String address;
 

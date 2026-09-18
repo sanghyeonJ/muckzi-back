@@ -29,6 +29,7 @@ public class ReviewService {
         Place place = placeService.findOrCreatePlace(
                 request.getPlaceName(),
                 request.getCategory(),
+                request.getFilterCategory(),
                 request.getAddress(),
                 request.getLatitude(),
                 request.getLongitude()
