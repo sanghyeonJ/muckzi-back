@@ -26,20 +26,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        if(authorization != null && authorization.startsWith("Bearer ")) {
+        if (authorization != null && authorization.startsWith("Bearer ")) {
             String token = authorization.substring(7);
-            String userId = jwtTokenProvider.getUserId(token);
-            User.Role role = jwtTokenProvider.getRole(token);
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userId,
-                            null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
-                    );
+            // 토큰이 유효할 때만 인증 처리, 만료/위조 토큰은 그냥 통과시켜
+            // 이후 authorizeHttpRequests에서 401로 자연스럽게 처리되도록 함
+            if (jwtTokenProvider.isValidToken(token)) {
+                String userId = jwtTokenProvider.getUserId(token);
+                User.Role role = jwtTokenProvider.getRole(token);
 
-            SecurityContextHolder.getContext()
-                    .setAuthentication(authentication);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                userId,
+                                null,
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                        );
+
+                SecurityContextHolder.getContext()
+                        .setAuthentication(authentication);
+            }
         }
 
         filterChain.doFilter(request, response);

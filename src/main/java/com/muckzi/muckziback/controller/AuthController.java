@@ -5,9 +5,11 @@ import com.muckzi.muckziback.dto.LoginResponse;
 import com.muckzi.muckziback.dto.RefreshRequest;
 import com.muckzi.muckziback.dto.SignupRequest;
 import com.muckzi.muckziback.service.AuthService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,14 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(Authentication authentication) {
+        String userId = authentication.getName();
+        authService.logout(userId);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/refresh")

@@ -9,6 +9,7 @@ import com.muckzi.muckziback.entity.User;
 import com.muckzi.muckziback.repository.RefreshTokenRepository;
 import com.muckzi.muckziback.repository.UserRepository;
 import com.muckzi.muckziback.security.JwtTokenProvider;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -77,6 +78,11 @@ public class AuthService {
         refreshTokenRepository.save(refreshTokenEntity);
 
         return new LoginResponse(token, refreshToken);
+    }
+
+    @Transactional
+    public void logout(String userId) {
+        refreshTokenRepository.deleteById(userId);
     }
 
     public LoginResponse refresh(RefreshRequest request) {
