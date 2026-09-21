@@ -4,10 +4,7 @@ import com.muckzi.muckziback.dto.PlaceResponse;
 import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +28,14 @@ public class PlaceController {
                 .filter(place -> place.getStatus() == Place.Status.ACTIVE)
                 .map(PlaceResponse::new)
                 .toList();
+    }
+
+    @GetMapping("/{placeId}")
+    public PlaceResponse getPlace(@PathVariable Long placeId) {
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
+
+        return new PlaceResponse(place);
     }
 
 }
