@@ -1,5 +1,6 @@
 package com.muckzi.muckziback.controller;
 
+import com.muckzi.muckziback.dto.MyReviewResponse;
 import com.muckzi.muckziback.dto.ReviewRequest;
 import com.muckzi.muckziback.dto.ReviewResponse;
 import com.muckzi.muckziback.entity.Place;
@@ -29,6 +30,18 @@ public class ReviewController {
                 .findByPlace_PlaceIdAndStatus(placeId, Review.Status.ACTIVE)
                 .stream()
                 .map(ReviewResponse::new)
+                .toList();
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/reviews/me")
+    public List<MyReviewResponse> getMyReviews(Authentication authentication) {
+        String userId = authentication.getName();
+
+        return reviewRepository
+                .findByUser_UserIdAndStatusOrderByCreatedAtDesc(userId, Review.Status.ACTIVE)
+                .stream()
+                .map(MyReviewResponse::new)
                 .toList();
     }
 
