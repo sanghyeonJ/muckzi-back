@@ -1,6 +1,7 @@
 package com.muckzi.muckziback.controller;
 
 import com.muckzi.muckziback.dto.BookmarkRequest;
+import com.muckzi.muckziback.dto.MyBookmarkResponse;
 import com.muckzi.muckziback.entity.Place;
 import com.muckzi.muckziback.repository.BookmarkRepository;
 import com.muckzi.muckziback.service.BookmarkService;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,6 +35,20 @@ public class BookmarkController {
                 .isPresent();
 
         return Map.of("bookmarked", bookmarked);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/bookmarks/me")
+    public List<MyBookmarkResponse> getMyBookmarks (
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        return bookmarkRepository
+                .findByUser_UserIdOrderByCreatedAtDesc(userId)
+                .stream()
+                .map(MyBookmarkResponse::new)
+                .toList();
     }
 
     @SecurityRequirement(name = "bearerAuth")
