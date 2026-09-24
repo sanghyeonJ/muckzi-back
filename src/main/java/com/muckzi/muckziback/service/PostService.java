@@ -1,5 +1,8 @@
 package com.muckzi.muckziback.service;
 
+import com.muckzi.muckziback.dto.PostDetailResponse;
+import com.muckzi.muckziback.dto.PostImageResponse;
+import com.muckzi.muckziback.dto.PostPlaceLinkResponse;
 import com.muckzi.muckziback.dto.PostRequest;
 import com.muckzi.muckziback.entity.*;
 import com.muckzi.muckziback.repository.*;
@@ -104,6 +107,29 @@ public class PostService {
                     .build();
             postPlaceLinkRepository.save(link);
         }
+    }
+
+
+    @Transactional(readOnly = true)
+    public PostDetailResponse getPostDetail(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        if (post.getStatus() != Post.Status.ACTIVE) {
+            throw new IllegalArgumentException("삭제된 게시글입니다.");
+        }
+
+        List<PostImageResponse> images = postImageRepository
+                .findByPost_PostIdOrderBySortOrderAsc(postId)
+                .stream()
+                .map(PostImageResponse::new)
+                .toList();
+        List<PostPlaceLinkResponse> places = postPlaceLinkRepository
+                .findByPost_PostId(postId)
+                .stream()
+                .map(PostPlaceLinkResponse::new)
+                .toList();
+
+        return new PostDetailResponse(post, images, places);
     }
 
 }

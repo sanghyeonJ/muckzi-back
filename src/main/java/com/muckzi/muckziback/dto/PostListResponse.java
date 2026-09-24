@@ -10,13 +10,13 @@ public class PostListResponse {
 
     private final Long postId;
     private final String title;
-    private final String content;
+    private final String nickname;
     private final LocalDateTime createdAt;
 
     public PostListResponse(Post post){
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.content = post.getContent();
+        this.nickname = post.getUser().getNickname();
         this.createdAt = post.getCreatedAt();
     }
 

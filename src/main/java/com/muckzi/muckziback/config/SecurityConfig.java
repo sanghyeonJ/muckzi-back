@@ -48,11 +48,13 @@ public class SecurityConfig {
                                 "/api/auth/refresh",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/kakao/**"
+                                "/api/kakao/**",
+                                "/uploads/**"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/api/places/**"
+                                "/api/places/**",
+                                "/api/posts/**"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
