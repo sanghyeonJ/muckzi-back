@@ -33,4 +33,11 @@ public class KakaoPlaceController {
                 neLng
         );
     }
+
+    @GetMapping("/search")
+    public List<MuckziPlaceResponse> searchPlacesNationwide(
+            @RequestParam String query
+    ) {
+        return kakaoPlaceService.searchPlacesNationwide(query);
+    }
 }

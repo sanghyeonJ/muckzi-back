@@ -91,6 +91,62 @@ public class KakaoPlaceService {
                 .toList();
     }
 
+    public List<MuckziPlaceResponse> searchPlacesNationwide(String query) {
+
+        KakaoPlaceSearchResponse response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v2/local/search/keyword.json")
+                        .queryParam("query", query)
+                        .build()
+                )
+                .header(
+                        HttpHeaders.AUTHORIZATION,
+                        "KakaoAK " + kakaoRestApiKey
+                )
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .body(KakaoPlaceSearchResponse.class);
+
+        return response.getDocuments().stream()
+
+                .filter(item ->
+                        "FD6".equals(item.getCategory_group_code())
+                                || "CE7".equals(item.getCategory_group_code())
+                )
+
+                .map(item -> {
+
+                    String category = item.getCategory_name();
+
+                    String filterCategory;
+
+                    if ("CE7".equals(item.getCategory_group_code())) {
+                        filterCategory = "카페";
+                    } else {
+                        String kakaoCategory = category
+                                .replaceFirst("^음식점\\s*>\\s*", "")
+                                .split("\\s*>\\s*")[0];
+
+                        filterCategory = convertCategory(kakaoCategory);
+                    }
+
+                    String address = !item.getRoad_address_name().isBlank()
+                            ? item.getRoad_address_name()
+                            : item.getAddress_name();
+
+                    return new MuckziPlaceResponse(
+                            item.getId(),
+                            item.getPlace_name(),
+                            category,
+                            filterCategory,
+                            address,
+                            Double.parseDouble(item.getY()),
+                            Double.parseDouble(item.getX())
+                    );
+                })
+                .toList();
+    }
+
     private String convertCategory(String category) {
 
         return switch (category) {
