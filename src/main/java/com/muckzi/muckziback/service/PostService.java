@@ -150,4 +150,68 @@ public class PostService {
         return new PostDetailResponse(post, images, places);
     }
 
+    @Transactional
+    public void updatePost (Long postId, String userId, PostRequest request) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        if (post.getStatus() != Post.Status.ACTIVE){
+            throw new IllegalArgumentException("수정할 수 없는 게시글입니다.");
+        }
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+        }
+
+        post.setTitle(request.getTitle());
+        post.setContent(request.getContent());
+        post.setUpdatedAt(java.time.LocalDateTime.now());
+    }
+
+    @Transactional
+    public void deleteImage (Long postId, Long imageId, String userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 게시글만 수정할 수 있습니다.");
+        }
+
+        PostImage image = postImageRepository.findById(imageId)
+                .orElseThrow(() -> new IllegalArgumentException("이미지를 찾을 수 없습니다."));
+        if (!image.getPost().getPostId().equals(postId)) {
+            throw new IllegalArgumentException("해당 게시글의 이미지가 아닙니다.");
+        }
+
+        postImageRepository.delete(image);
+    }
+
+    @Transactional
+    public void deletePlaceLink (Long postId, Long linkId, String userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 게시글의 음식점 링크만 삭제할 수 있습니다.");
+        }
+
+        PostPlaceLink link = postPlaceLinkRepository.findById(linkId)
+                .orElseThrow(() -> new IllegalArgumentException("음식점 링크를 찾을 수 없습니다."));
+        if (!link.getPost().getPostId().equals(postId)) {
+            throw new IllegalArgumentException("해당 게시글의 음식점링크가 아닙니다.");
+        }
+
+        postPlaceLinkRepository.delete(link);
+    }
+
+    @Transactional
+    public void deletePost (Long postId, String userId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        if (post.getStatus() != Post.Status.ACTIVE) {
+            throw new IllegalArgumentException("이미 삭제된 게시글입니다.");
+        }
+        if (!post.getUser().getUserId().equals(userId)) {
+            throw new IllegalArgumentException("본인이 작성한 게시글만 삭제할 수 있습니다.");
+        }
+
+        post.setStatus(Post.Status.DELETED);
+    }
+
 }

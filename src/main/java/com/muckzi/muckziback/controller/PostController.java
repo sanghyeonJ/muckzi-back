@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.Authentication;
@@ -27,11 +28,13 @@ public class PostController {
     private final PostRepository postRepository;
 
     @GetMapping
-    public Page<PostListResponse> getPosts (
+    public Page<PostListResponse> getPosts(
             @PageableDefault(size = 10) Pageable pageable
     ) {
+        Pageable pageOnly = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+
         return postRepository
-                .findByStatusOrderByCreatedAtDesc(Post.Status.ACTIVE, pageable)
+                .findByStatusOrderByCreatedAtDesc(Post.Status.ACTIVE, pageOnly)
                 .map(PostListResponse::new);
     }
 
@@ -72,6 +75,53 @@ public class PostController {
     ) {
         String userId = authentication.getName();
         postService.addPlaceLinks(postId, userId, request.getPlaces());
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @PutMapping("/{postId}")
+    public void updatePost (
+            @PathVariable Long postId,
+            @Valid @RequestBody PostRequest request,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        postService.updatePost(postId, userId, request);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{postId}/images/{imageId}")
+    public void deleteImage (
+            @PathVariable Long postId,
+            @PathVariable Long imageId,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        postService.deleteImage(postId, imageId, userId);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{postId}/places/{linkId}")
+    public void deletePlaceLink (
+            @PathVariable Long postId,
+            @PathVariable Long linkId,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        postService.deletePlaceLink(postId, linkId, userId);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/{postId}")
+    public void deletePost (
+            @PathVariable Long postId,
+            Authentication authentication
+    ) {
+        String userId = authentication.getName();
+
+        postService.deletePost(postId, userId);
     }
 
 }
