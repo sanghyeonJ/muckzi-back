@@ -1,9 +1,6 @@
 package com.muckzi.muckziback.controller;
 
-import com.muckzi.muckziback.dto.PlaceIdsRequest;
-import com.muckzi.muckziback.dto.PostDetailResponse;
-import com.muckzi.muckziback.dto.PostListResponse;
-import com.muckzi.muckziback.dto.PostRequest;
+import com.muckzi.muckziback.dto.*;
 import com.muckzi.muckziback.entity.Post;
 import com.muckzi.muckziback.repository.PostRepository;
 import com.muckzi.muckziback.service.PostService;
@@ -70,11 +67,11 @@ public class PostController {
     @PostMapping("/{postId}/places")
     public void addPlaceLinks (
             @PathVariable Long postId,
-            @Valid @RequestBody PlaceIdsRequest request,
+            @Valid @RequestBody PostPlaceLinkRequest request,
             Authentication authentication
     ) {
         String userId = authentication.getName();
-        postService.addPlaceLinks(postId, userId, request.getPlaceIds());
+        postService.addPlaceLinks(postId, userId, request.getPlaces());
     }
 
 }

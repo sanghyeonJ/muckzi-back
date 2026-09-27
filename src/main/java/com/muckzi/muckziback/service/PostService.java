@@ -1,9 +1,6 @@
 package com.muckzi.muckziback.service;
 
-import com.muckzi.muckziback.dto.PostDetailResponse;
-import com.muckzi.muckziback.dto.PostImageResponse;
-import com.muckzi.muckziback.dto.PostPlaceLinkResponse;
-import com.muckzi.muckziback.dto.PostRequest;
+import com.muckzi.muckziback.dto.*;
 import com.muckzi.muckziback.entity.*;
 import com.muckzi.muckziback.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +24,7 @@ public class PostService {
     private final PostImageRepository postImageRepository;
     private final PlaceRepository placeRepository;
     private final PostPlaceLinkRepository postPlaceLinkRepository;
+    private final PlaceService placeService;
 
     private static final String UPLOAD_DIR = "uploads";
 
@@ -91,20 +89,40 @@ public class PostService {
 
 
     @Transactional
-    public void addPlaceLinks (Long postId, String userId, List<Long> placeIds) {
+    public void addPlaceLinks (Long postId, String userId, List<PostPlaceLinkRequest.PlaceInfo> places) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
         if(!post.getUser().getUserId().equals(userId)){
             throw new IllegalArgumentException("본인이 작성한 게시글에만 음식점을 연결할 수 있습니다.");
         }
 
-        for (Long placeId : placeIds) {
-            Place place = placeRepository.findById(placeId)
-                    .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
+        for (PostPlaceLinkRequest.PlaceInfo info : places) {
+            Place place;
+
+            if (info.getPlaceId() != null) {
+                // 이미 등록된 음식점
+                place = placeRepository.findById(info.getPlaceId())
+                        .orElseThrow(() -> new IllegalArgumentException("음식점을 찾을 수 없습니다."));
+            } else {
+                if (info.getPlaceName() == null || info.getAddress() == null || info.getLatitude() == null || info.getLongitude() == null) {
+                    throw new IllegalArgumentException("음식점 정보가 올바르지 않습니다.");
+                }
+
+                place = placeService.findOrCreatePlace(
+                        info.getPlaceName(),
+                        info.getCategory(),
+                        info.getFilterCategory(),
+                        info.getAddress(),
+                        info.getLatitude(),
+                        info.getLongitude()
+                );
+            }
+
             PostPlaceLink link = PostPlaceLink.builder()
                     .post(post)
                     .place(place)
                     .build();
+
             postPlaceLinkRepository.save(link);
         }
     }

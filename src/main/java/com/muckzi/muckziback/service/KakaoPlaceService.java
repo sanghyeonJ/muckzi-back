@@ -2,6 +2,7 @@ package com.muckzi.muckziback.service;
 
 import com.muckzi.muckziback.dto.KakaoPlaceSearchResponse;
 import com.muckzi.muckziback.dto.MuckziPlaceResponse;
+import com.muckzi.muckziback.dto.MuckziPlaceSearchResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -91,12 +92,13 @@ public class KakaoPlaceService {
                 .toList();
     }
 
-    public List<MuckziPlaceResponse> searchPlacesNationwide(String query) {
+    public MuckziPlaceSearchResponse searchPlacesNationwide(String query, int page) {
 
         KakaoPlaceSearchResponse response = restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/v2/local/search/keyword.json")
                         .queryParam("query", query)
+                        .queryParam("page", page)
                         .build()
                 )
                 .header(
@@ -107,7 +109,7 @@ public class KakaoPlaceService {
                 .retrieve()
                 .body(KakaoPlaceSearchResponse.class);
 
-        return response.getDocuments().stream()
+        List<MuckziPlaceResponse> places = response.getDocuments().stream()
 
                 .filter(item ->
                         "FD6".equals(item.getCategory_group_code())
@@ -145,6 +147,10 @@ public class KakaoPlaceService {
                     );
                 })
                 .toList();
+
+        boolean isEnd = page >= 3 || response.getMeta().getIs_end();
+
+        return new MuckziPlaceSearchResponse(places, isEnd);
     }
 
     private String convertCategory(String category) {

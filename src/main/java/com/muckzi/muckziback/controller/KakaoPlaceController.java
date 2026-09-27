@@ -1,6 +1,7 @@
 package com.muckzi.muckziback.controller;
 
 import com.muckzi.muckziback.dto.MuckziPlaceResponse;
+import com.muckzi.muckziback.dto.MuckziPlaceSearchResponse;
 import com.muckzi.muckziback.service.KakaoPlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,9 +36,10 @@ public class KakaoPlaceController {
     }
 
     @GetMapping("/search")
-    public List<MuckziPlaceResponse> searchPlacesNationwide(
-            @RequestParam String query
+    public MuckziPlaceSearchResponse searchPlacesNationwide(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "1") int page
     ) {
-        return kakaoPlaceService.searchPlacesNationwide(query);
+        return kakaoPlaceService.searchPlacesNationwide(query, page);
     }
 }
