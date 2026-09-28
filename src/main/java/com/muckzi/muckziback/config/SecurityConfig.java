@@ -49,7 +49,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/kakao/**",
-                                "/uploads/**"
+                                "/uploads/**",
+                                "/error"
                         ).permitAll()
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -57,6 +58,7 @@ public class SecurityConfig {
                                 "/api/posts/**"
                         )
                         .permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
