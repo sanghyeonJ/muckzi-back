@@ -1,6 +1,8 @@
 package com.muckzi.muckziback.repository;
 
 import com.muckzi.muckziback.entity.Comment;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,5 +22,29 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     // 해당 댓글에 삭제되지않은 답글 확인
     boolean existsByParent_CommentIdAndStatus(Long parentId, Comment.Status status);
+
+    // 관리자 댓글 검색 (keyword, status가 null이면 해당 조건은 무시)
+    @Query(
+            value = "SELECT c FROM Comment c " +
+                    "JOIN FETCH c.user u " +
+                    "JOIN FETCH c.post p " +
+                    "WHERE (:keyword IS NULL " +
+                    "       OR c.content LIKE CONCAT('%', :keyword, '%') " +
+                    "       OR u.userId LIKE CONCAT('%', :keyword, '%') " +
+                    "       OR u.nickname LIKE CONCAT('%', :keyword, '%')) " +
+                    "AND (:status IS NULL OR c.status = :status)",
+            countQuery = "SELECT COUNT(c) FROM Comment c " +
+                    "JOIN c.user u " +
+                    "WHERE (:keyword IS NULL " +
+                    "       OR c.content LIKE CONCAT('%', :keyword, '%') " +
+                    "       OR u.userId LIKE CONCAT('%', :keyword, '%') " +
+                    "       OR u.nickname LIKE CONCAT('%', :keyword, '%')) " +
+                    "AND (:status IS NULL OR c.status = :status)"
+    )
+    Page<Comment> searchComments(
+            @Param("keyword") String keyword,
+            @Param("status") Comment.Status status,
+            Pageable pageable
+    );
 
 }

@@ -110,7 +110,7 @@ public class CommentService {
         comment.setUpdatedAt(LocalDateTime.now());
     }
 
-    // 댓글 삭제
+    // 댓글 삭제 (사용자 - 본인만)
     @Transactional
     public void deleteComment (Long commentId, String userId) {
         Comment comment = commentRepository.findById(commentId)
@@ -122,18 +122,38 @@ public class CommentService {
             throw new IllegalArgumentException("본인이 작성한 댓글만 삭제할 수 있습니다.");
         }
 
+        removeComment(comment);
+    }
+
+    // 댓글 삭제 (관리자 - 본인 확인 없음)
+    @Transactional
+    public void deleteCommentByAdmin (Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("댓글을 찾을 수 없습니다."));
+        if (comment.getStatus() != Comment.Status.ACTIVE) {
+            throw new IllegalArgumentException("이미 삭제된 댓글입니다.");
+        }
+
+        removeComment(comment);
+    }
+
+    // 실제 삭제 처리 (사용자/관리자 공통 규칙)
+    private void removeComment (Comment comment) {
+        // 일반 댓글인데 살아있는 답글이 있으면 → "삭제된 댓글입니다"로 표시 (soft delete)
         if (comment.getParent() == null
-                && commentRepository.existsByParent_CommentIdAndStatus(commentId, Comment.Status.ACTIVE)){
+                && commentRepository.existsByParent_CommentIdAndStatus(comment.getCommentId(), Comment.Status.ACTIVE)) {
             comment.setStatus(Comment.Status.DELETED);
             return;
         }
 
+        // 그 외에는 실제 삭제
         Comment parent = comment.getParent();
         commentRepository.delete(comment);
 
+        // 삭제된(DELETED) 부모 댓글의 마지막 답글을 지운 경우 → 부모도 실제 삭제
         if (parent != null
                 && parent.getStatus() == Comment.Status.DELETED
-                && !commentRepository.existsByParent_CommentIdAndStatus(parent.getCommentId(), Comment.Status.ACTIVE)){
+                && !commentRepository.existsByParent_CommentIdAndStatus(parent.getCommentId(), Comment.Status.ACTIVE)) {
             commentRepository.delete(parent);
         }
     }
