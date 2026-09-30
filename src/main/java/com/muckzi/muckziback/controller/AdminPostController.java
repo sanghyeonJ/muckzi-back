@@ -27,7 +27,7 @@ public class AdminPostController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
-    @PostMapping("/{postId}/status")
+    @PatchMapping("/{postId}/status")
     public void updatePostStatus (
             @PathVariable Long postId,
             @RequestParam Post.Status status
