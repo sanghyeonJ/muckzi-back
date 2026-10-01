@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
@@ -38,5 +40,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             @Param("status") Post.Status status,
             Pageable pageable
     );
+
+    // 대시보드: 특정 상태 게시글 수
+    long countByStatus(Post.Status status);
+    // 대시보드: 특정 상태 + 특정 시각 이후 작성된 게시글 수 (오늘 게시글)
+    long countByStatusAndCreatedAtGreaterThanEqual(Post.Status status, LocalDateTime start);
 
 }

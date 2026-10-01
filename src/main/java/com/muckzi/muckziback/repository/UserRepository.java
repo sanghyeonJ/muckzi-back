@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -27,5 +28,12 @@ public interface UserRepository extends JpaRepository<User, String> {
             @Param("status") User.Status status,
             Pageable pageable
     );
+
+    // 대시보드: 상태가 특정 값이 아닌 회원 수 (탈퇴 제외할 때 사용)
+    long countByStatusNot (User.Status status);
+    // 대시보드: 특정 상태 회원 수 (차단 회원 수)
+    long countByStatus (User.Status status);
+    // 대시보드: 특정 시각 이후 가입한 회원 수 (오늘 가입자)
+    long countByCreatedAtGreaterThanEqual(LocalDateTime start);
 
 }

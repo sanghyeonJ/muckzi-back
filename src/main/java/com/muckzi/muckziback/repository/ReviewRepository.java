@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -45,5 +46,10 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             @Param("status") Review.Status status,
             Pageable pageable
     );
+
+    // 대시보드: 특정 상태 리뷰 수
+    long countByStatus(Review.Status status);
+    // 대시보드: 특정 상태 + 특정 시각 이후 작성된 리뷰 수 (오늘 리뷰)
+    long countByStatusAndCreatedAtGreaterThanEqual(Review.Status status, LocalDateTime start);
 
 }

@@ -47,4 +47,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             Pageable pageable
     );
 
+    // 대시보드: 특정 상태 댓글 수
+    long countByStatus(Comment.Status status);
+
 }
