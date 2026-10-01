@@ -3,6 +3,8 @@ package com.muckzi.muckziback.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @Builder
 public class AdminDashboardResponse {
@@ -18,5 +20,7 @@ public class AdminDashboardResponse {
     private final long todayReviews;
 
     private final long totalComments;
+
+    private final List<AdminPopularPlaceResponse> popularPlaces;
 
 }

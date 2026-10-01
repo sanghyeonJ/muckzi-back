@@ -1,5 +1,6 @@
 package com.muckzi.muckziback.repository;
 
+import com.muckzi.muckziback.dto.AdminPopularPlaceResponse;
 import com.muckzi.muckziback.entity.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,5 +52,16 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     long countByStatus(Review.Status status);
     // 대시보드: 특정 상태 + 특정 시각 이후 작성된 리뷰 수 (오늘 리뷰)
     long countByStatusAndCreatedAtGreaterThanEqual(Review.Status status, LocalDateTime start);
+    // 관리자 대시보드: 리뷰 많은 음식점 순위
+    @Query("select new com.muckzi.muckziback.dto.AdminPopularPlaceResponse(p.placeId, p.placeName, count(r)) " +
+            "from Review r " +
+            "join r.place p " +
+            "where r.status = :status " +
+            "group by p.placeId, p.placeName " +
+            "order by count(r) desc")
+    List<AdminPopularPlaceResponse> findPopularPlaces(
+            @Param("status") Review.Status status,
+            Pageable pageable
+    );
 
 }

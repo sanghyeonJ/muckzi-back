@@ -10,6 +10,7 @@ import com.muckzi.muckziback.repository.PostRepository;
 import com.muckzi.muckziback.repository.ReviewRepository;
 import com.muckzi.muckziback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,8 @@ public class AdminDashboardService {
                 .todayReviews(reviewRepository.countByStatusAndCreatedAtGreaterThanEqual(Review.Status.ACTIVE, todayStart))
 
                 .totalComments(commentRepository.countByStatus(Comment.Status.ACTIVE))
+
+                .popularPlaces(reviewRepository.findPopularPlaces(Review.Status.ACTIVE, PageRequest.of(0, 5)))
                 .build();
     }
 
