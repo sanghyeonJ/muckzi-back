@@ -2,7 +2,9 @@ package com.muckzi.muckziback.service;
 
 import com.muckzi.muckziback.dto.NicknameUpdateRequest;
 import com.muckzi.muckziback.dto.PasswordUpdateRequest;
+import com.muckzi.muckziback.dto.WithdrawRequest;
 import com.muckzi.muckziback.entity.User;
+import com.muckzi.muckziback.repository.RefreshTokenRepository;
 import com.muckzi.muckziback.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,6 +17,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public void updateNickname(String userId, NicknameUpdateRequest request) {
@@ -37,6 +40,25 @@ public class UserService {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+
+    @Transactional
+    public void withdraw (String userId, WithdrawRequest request) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        if (user.getStatus() != User.Status.ACTIVE) {
+            throw new IllegalArgumentException("탈퇴할 수 없는 계정입니다.");
+        }
+        if (user.getRole() == User.Role.ADMIN) {
+            throw new IllegalArgumentException("관리자 계정은 탈퇴할 수 없습니다.");
+        }
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setStatus(User.Status.DELETED);
+        refreshTokenRepository.deleteById(userId);
     }
 
 }

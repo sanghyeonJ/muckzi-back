@@ -3,6 +3,7 @@ package com.muckzi.muckziback.controller;
 import com.muckzi.muckziback.dto.NicknameUpdateRequest;
 import com.muckzi.muckziback.dto.PasswordUpdateRequest;
 import com.muckzi.muckziback.dto.UserResponse;
+import com.muckzi.muckziback.dto.WithdrawRequest;
 import com.muckzi.muckziback.entity.User;
 import com.muckzi.muckziback.repository.UserRepository;
 import com.muckzi.muckziback.service.UserService;
@@ -48,6 +49,13 @@ public class UserController {
     public void updatePassword(Authentication authentication, @Valid @RequestBody PasswordUpdateRequest request) {
         String userId = authentication.getName();
         userService.updatePassword(userId, request);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/me")
+    public void withdraw (Authentication authentication, @Valid @RequestBody WithdrawRequest request) {
+        String userId = authentication.getName();
+        userService.withdraw(userId, request);
     }
 
 }
