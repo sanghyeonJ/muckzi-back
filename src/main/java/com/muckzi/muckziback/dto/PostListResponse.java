@@ -16,7 +16,7 @@ public class PostListResponse {
     public PostListResponse(Post post){
         this.postId = post.getPostId();
         this.title = post.getTitle();
-        this.nickname = post.getUser().getNickname();
+        this.nickname = post.getUser().getDisplayNickname();
         this.createdAt = post.getCreatedAt();
     }
 

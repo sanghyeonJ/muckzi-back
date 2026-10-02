@@ -48,4 +48,12 @@ public class User {
     @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // 화면에 보여줄 닉네임 (탈퇴 회원은 닉네임 대신 "탈퇴한 회원")
+    public String getDisplayNickname() {
+        if (this.status == Status.DELETED) {
+            return "탈퇴한 회원";
+        }
+        return this.nickname;
+    }
+
 }

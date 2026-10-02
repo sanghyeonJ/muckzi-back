@@ -18,7 +18,7 @@ public class ReviewResponse {
     public ReviewResponse(Review review){
         this.reviewId = review.getReviewId();
         this.userId = review.getUser().getUserId();
-        this.nickname = review.getUser().getNickname();
+        this.nickname = review.getUser().getDisplayNickname();
         this.content = review.getContent();
         this.createdAt = review.getCreatedAt();
         this.updatedAt = review.getUpdatedAt();

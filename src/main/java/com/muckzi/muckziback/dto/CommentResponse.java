@@ -33,7 +33,7 @@ public class CommentResponse {
             this.content = "삭제된 댓글입니다.";
         } else {
             this.userId = comment.getUser().getUserId();
-            this.nickname = comment.getUser().getNickname();
+            this.nickname = comment.getUser().getDisplayNickname();
             this.content = comment.getContent();
         }
 

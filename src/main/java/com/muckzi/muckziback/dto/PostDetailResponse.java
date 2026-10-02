@@ -26,7 +26,7 @@ public class PostDetailResponse {
     ) {
         this.postId = post.getPostId();
         this.userId = post.getUser().getUserId();
-        this.nickname = post.getUser().getNickname();
+        this.nickname = post.getUser().getDisplayNickname();
         this.title = post.getTitle();
         this.content = post.getContent();
         this.createdAt = post.getCreatedAt();
