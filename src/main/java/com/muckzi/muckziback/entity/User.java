@@ -48,12 +48,21 @@ public class User {
     @Column(name = "CREATED_AT", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // 탈퇴 회원 표시용 닉네임 (가입·변경 시 사용 금지)
+    public static final String DELETED_NICKNAME = "탈퇴한 회원";
+
     // 화면에 보여줄 닉네임 (탈퇴 회원은 닉네임 대신 "탈퇴한 회원")
     public String getDisplayNickname() {
         if (this.status == Status.DELETED) {
-            return "탈퇴한 회원";
+            return DELETED_NICKNAME;
         }
         return this.nickname;
+    }
+
+    // 사용할 수 없는 닉네임인지 (공백 빼고 비교 → "탈퇴한회원", "탈퇴한  회원"도 막음)
+    public static boolean isReservedNickname(String nickname) {
+        if (nickname == null) return false;
+        return nickname.replace(" ", "").equals(DELETED_NICKNAME.replace(" ", ""));
     }
 
 }

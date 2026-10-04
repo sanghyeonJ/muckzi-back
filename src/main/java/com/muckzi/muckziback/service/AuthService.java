@@ -32,6 +32,11 @@ public class AuthService {
             throw new IllegalArgumentException("이미 사용중인 아이디입니다.");
         }
 
+        // 사용 금지 닉네임 확인
+        if (User.isReservedNickname(request.getNickname())) {
+            throw new IllegalArgumentException("사용할 수 없는 닉네임입니다.");
+        }
+
         // 닉네임 중복 확인
         if(userRepository.existsByNickname(request.getNickname())){
             throw new IllegalArgumentException("이미 사용중인 닉네임입니다.");
