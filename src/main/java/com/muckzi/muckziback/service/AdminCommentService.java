@@ -21,10 +21,7 @@ public class AdminCommentService {
     // 댓글 목록 조회 (검색 + 상태 필터 + 페이지네이션)
     @Transactional(readOnly = true)
     public Page<AdminCommentResponse> getComments (String keyword, Comment.Status status, int page, int size) {
-        // 빈 검색어는 null로 바꿔서 "검색 안 함"으로 처리
-        if (keyword != null && keyword.isBlank()) {
-            keyword = null;
-        }
+        keyword = (keyword == null) ? "" : keyword.trim();
 
         // 작성일 최신순 정렬
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));

@@ -23,14 +23,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 관리자가 게시글 검색
     @Query(
             value = "select p from Post p join fetch p.user u " +
-                    "where (:keyword is null " +
-                    "       or p.title like concat('%', :keyword, '%') " +
+                    "where (p.title like concat('%', :keyword, '%') " +
                     "       or u.userId like concat('%', :keyword, '%') " +
                     "       or u.nickname like concat('%', :keyword, '%')) " +
                     "and (:status is null or p.status = :status)",
             countQuery = "select count(p) from Post p join p.user u " +
-                    "where (:keyword is null " +
-                    "       or p.title like concat('%', :keyword, '%') " +
+                    "where (p.title like concat('%', :keyword, '%') " +
                     "       or u.userId like concat('%', :keyword, '%') " +
                     "       or u.nickname like concat('%', :keyword, '%')) " +
                     "and (:status is null or p.status = :status)"

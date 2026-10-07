@@ -26,8 +26,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             value = "select r from Review r " +
                     "join fetch r.user u " +
                     "join fetch r.place p " +
-                    "where (:keyword is null " +
-                    "       or r.content like concat('%', :keyword, '%') " +
+                    "where (r.content like concat('%', :keyword, '%') " +
                     "       or p.placeName like concat('%', :keyword, '%') " +
                     "       or u.userId like concat('%', :keyword, '%') " +
                     "       or u.nickname like concat('%', :keyword, '%')) " +
@@ -35,8 +34,7 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             countQuery = "select count(r) from Review r " +
                     "join r.user u " +
                     "join r.place p " +
-                    "where (:keyword is null " +
-                    "       or r.content like concat('%', :keyword, '%') " +
+                    "where (r.content like concat('%', :keyword, '%') " +
                     "       or p.placeName like concat('%', :keyword, '%') " +
                     "       or u.userId like concat('%', :keyword, '%') " +
                     "       or u.nickname like concat('%', :keyword, '%')) " +

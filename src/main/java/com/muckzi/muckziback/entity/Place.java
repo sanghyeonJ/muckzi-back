@@ -36,10 +36,10 @@ public class Place {
     @Column(name = "ADDRESS", nullable = false, length = 200)
     private String address;
 
-    @Column(name = "LATITUDE", columnDefinition = "NUMBER(13,10)", nullable = false)
+    @Column(name = "LATITUDE", nullable = false)
     private Double latitude;
 
-    @Column(name = "LONGITUDE", columnDefinition = "NUMBER(13,10)", nullable = false)
+    @Column(name = "LONGITUDE", nullable = false)
     private Double longitude;
 
     @Builder.Default

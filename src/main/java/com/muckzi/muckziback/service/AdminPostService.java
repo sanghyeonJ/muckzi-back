@@ -20,9 +20,7 @@ public class AdminPostService {
     // 게시글 목록 조회
     @Transactional(readOnly = true)
     public Page<AdminPostResponse> getPages (String keyword, Post.Status status, int page, int size) {
-        if (keyword != null && keyword.isBlank()) {
-            keyword = null;
-        }
+        keyword = (keyword == null) ? "" : keyword.trim();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 

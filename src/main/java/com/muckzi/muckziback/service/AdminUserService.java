@@ -20,9 +20,7 @@ public class AdminUserService {
     // 회원 목록 조회
     @Transactional(readOnly = true)
     public Page<AdminUserResponse> getUsers (String keyword, User.Status status, int page, int size) {
-        if (keyword != null && keyword.isBlank()) {
-            keyword = null;
-        }
+        keyword = (keyword == null) ? "" : keyword.trim();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 

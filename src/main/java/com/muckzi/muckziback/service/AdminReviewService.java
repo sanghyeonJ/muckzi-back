@@ -25,9 +25,7 @@ public class AdminReviewService {
             int page,
             int size
     ) {
-        if (keyword != null && keyword.isBlank()) {
-            keyword = null;
-        }
+        keyword = (keyword == null) ? "" : keyword.trim();
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 

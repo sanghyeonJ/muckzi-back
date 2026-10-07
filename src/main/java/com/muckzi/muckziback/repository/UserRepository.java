@@ -19,8 +19,7 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByUserId(String userId);
 
     @Query("SELECT u FROM User u " +
-            "WHERE (:keyword IS NULL " +
-            "       OR u.userId LIKE CONCAT('%', :keyword, '%') " +
+            "WHERE (u.userId LIKE CONCAT('%', :keyword, '%') " +
             "       OR u.nickname LIKE CONCAT('%', :keyword, '%')) " +
             "AND (:status IS NULL OR u.status = :status)")
     Page<User> searchUsers (

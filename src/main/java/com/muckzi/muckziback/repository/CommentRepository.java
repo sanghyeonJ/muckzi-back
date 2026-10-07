@@ -28,15 +28,13 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             value = "SELECT c FROM Comment c " +
                     "JOIN FETCH c.user u " +
                     "JOIN FETCH c.post p " +
-                    "WHERE (:keyword IS NULL " +
-                    "       OR c.content LIKE CONCAT('%', :keyword, '%') " +
+                    "WHERE (c.content LIKE CONCAT('%', :keyword, '%') " +
                     "       OR u.userId LIKE CONCAT('%', :keyword, '%') " +
                     "       OR u.nickname LIKE CONCAT('%', :keyword, '%')) " +
                     "AND (:status IS NULL OR c.status = :status)",
             countQuery = "SELECT COUNT(c) FROM Comment c " +
                     "JOIN c.user u " +
-                    "WHERE (:keyword IS NULL " +
-                    "       OR c.content LIKE CONCAT('%', :keyword, '%') " +
+                    "WHERE (c.content LIKE CONCAT('%', :keyword, '%') " +
                     "       OR u.userId LIKE CONCAT('%', :keyword, '%') " +
                     "       OR u.nickname LIKE CONCAT('%', :keyword, '%')) " +
                     "AND (:status IS NULL OR c.status = :status)"
