@@ -8,12 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +20,7 @@ public class PostService {
     private final PlaceRepository placeRepository;
     private final PostPlaceLinkRepository postPlaceLinkRepository;
     private final PlaceService placeService;
-
-    private static final String UPLOAD_DIR = "uploads";
+    private final SupabaseStorageService supabaseStorageService;
 
     @Transactional
     public Post createPost (String userId, PostRequest request) {
@@ -54,39 +48,16 @@ public class PostService {
         int nextSortOrder = postImageRepository.findByPost_PostIdOrderBySortOrderAsc(postId).size();
 
         for (MultipartFile file : files) {
-            String savedFileName = saveFile(file);
+            String imageUrl = supabaseStorageService.upload(file);
 
             PostImage postImage = PostImage.builder()
                     .post(post)
-                    .imageUrl("/uploads/" + savedFileName)
+                    .imageUrl(imageUrl)
                     .sortOrder(nextSortOrder++)
                     .build();
             postImageRepository.save(postImage);
         }
     }
-
-
-    private String saveFile (MultipartFile file) {
-        try {
-            Path uploadPath = Paths.get(UPLOAD_DIR);
-
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String savedFileName = UUID.randomUUID() + extension;
-
-            Path filePath = uploadPath.resolve(savedFileName);
-            file.transferTo(filePath);
-
-            return savedFileName;
-        } catch (IOException e) {
-            throw new IllegalArgumentException("이미지 저장에 실패했습니다.");
-        }
-    }
-
 
     @Transactional
     public void addPlaceLinks (Long postId, String userId, List<PostPlaceLinkRequest.PlaceInfo> places) {
@@ -181,6 +152,7 @@ public class PostService {
         }
 
         postImageRepository.delete(image);
+        supabaseStorageService.delete(image.getImageUrl());
     }
 
     @Transactional
