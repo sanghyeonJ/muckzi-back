@@ -118,28 +118,31 @@ flowchart LR
 ## 🔥 트러블슈팅
 
 ### 1. N+1 문제
+
 - **문제** : 목록 조회 시 연관된 엔티티를 가져오느라 데이터 개수만큼 쿼리가 추가로 실행됨
 - **해결** : 연관 엔티티를 함께 가져오도록 `fetch join`을 적용해 쿼리 수를 줄임
 
 ### 2. 한글 입력 길이 초과 (Oracle)
+
 - **문제** : Oracle의 `VARCHAR2`가 기본적으로 바이트 기준이라, 한글은 글자당 여러 바이트를 차지해 설정한 길이보다 적게 입력해도 오류 발생
 - **해결** : 컬럼 길이를 글자 기준(`CHAR`)으로 변경
 
-### 3. Oracle → PostgreSQL 전환
-- **문제** : 개발은 로컬 Oracle(Docker)로 진행했지만, 무료로 배포 가능한 DB 환경이 필요함
-- **해결** : Supabase(PostgreSQL)로 전환하고, 기존 데이터는 옮기지 않고 새 테이블로 시작
+### 3. 배포 환경에서의 이미지 저장
 
-### 4. 배포 환경에서의 이미지 저장
-- **문제** : 게시글 이미지를 서버의 로컬 `uploads` 폴더에 저장하고 있었는데, Render 무료 플랜은 서버가 재시작되면 파일이 사라짐
-- **해결** : Supabase Storage로 업로드 방식을 전환하고 기존 정적 리소스 설정 제거
+- **문제** : 로컬에서는 문제가 없었지만, Render는 배포나 재시작 시 새 컨테이너로 교체되어 서버 로컬 `uploads` 폴더에 저장한 이미지가 사라짐
+- **해결** : 이미지를 서버 밖의 외부 스토리지인 Supabase Storage에 저장하도록 업로드 방식 전환
 
-### 5. 무료 서버 슬립 & DB 일시정지
-- **문제** : Render 무료 플랜은 15분간 요청이 없으면 서버가 잠들어 첫 접속이 느려지고, Supabase 무료 플랜은 7일간 활동이 없으면 프로젝트가 일시정지됨
-- **해결** : cron-job.org로 `/api/health`를 10분마다 호출해 서버와 DB를 깨어 있는 상태로 유지
+### 4. iOS 입력창 자동 확대
 
-### 6. iOS 입력창 자동 확대
 - **문제** : 아이폰 Safari에서 입력창을 누르면 화면이 확대됨 (16px 미만 글자 크기의 입력창에서 발생)
 - **해결** : 모바일 화면에서만 입력창 글자 크기를 16px로 지정
+
+<br>
+
+## ☁️ 배포 환경 구성
+
+- **Oracle → PostgreSQL** : 로컬 Oracle(Docker)로 개발한 뒤, 무료 운영 환경에 맞춰 Supabase(PostgreSQL)로 전환
+- **무료 서버 슬립 대응** : Render는 15분 미사용 시 슬립, Supabase는 7일 미활동 시 일시정지되어 cron-job.org로 `/api/health`를 10분마다 호출
 
 <br>
 
@@ -148,17 +151,18 @@ flowchart LR
 민감한 정보는 코드에 포함하지 않고 환경변수로 분리해 관리합니다.
 로컬에서는 IntelliJ 실행 설정, 배포 환경에서는 Render 환경변수로 주입합니다.
 
-| 이름 | 설명 |
-| --- | --- |
-| `DB_URL` | PostgreSQL 접속 URL |
-| `DB_USERNAME` | DB 사용자명 |
-| `DB_PASSWORD` | DB 비밀번호 |
-| `JWT_SECRET` | JWT 서명 키 |
-| `KAKAO_REST_API_KEY` | 카카오 Local REST API 키 |
-| `SUPABASE_URL` | Supabase 프로젝트 URL |
-| `SUPABASE_SECRET_KEY` | Supabase Storage 접근 키 |
-| `SUPABASE_BUCKET` | 이미지 저장 버킷 이름 |
-| `CORS_ALLOWED_ORIGINS` | 허용할 프론트엔드 주소 |
+| 이름                   | 설명                     |
+| ---------------------- | ------------------------ |
+| `DB_URL`               | PostgreSQL 접속 URL      |
+| `DB_USERNAME`          | DB 사용자명              |
+| `DB_PASSWORD`          | DB 비밀번호              |
+| `JWT_SECRET`           | JWT 서명 키              |
+| `KAKAO_REST_API_KEY`   | 카카오 Local REST API 키 |
+| `SUPABASE_URL`         | Supabase 프로젝트 URL    |
+| `SUPABASE_SECRET_KEY`  | Supabase Storage 접근 키 |
+| `SUPABASE_BUCKET`      | 이미지 저장 버킷 이름    |
+| `CORS_ALLOWED_ORIGINS` | 허용할 프론트엔드 주소   |
+
 <br>
 
 ## 🔭 향후 개선
